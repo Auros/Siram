@@ -1,0 +1,12 @@
+﻿{
+  "$schema": "https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json",
+  "id": "Siram",
+  "name": "Siram",
+  "author": "SIRA",
+  "version": "0.1.0",
+  "description": "The player client for the competition manager Siram",
+  "gameVersion": "1.13.0",
+  "dependsOn": {
+    "BSIPA": "^4.1.3"
+  }
+}
