@@ -1,16 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using Serilog.Core;
+using System.Threading.Tasks;
+using Serilog.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Siram.Server
 {
     public class Program
     {
-        private static Initialization _initialization = null!;
-
         public static Task Main(string[] args)
         {
             (IHostBuilder, Initialization) siramSetup = CreateHostBuilder(args);
-            _initialization = siramSetup.Item2;
             using IHost host = siramSetup.Item1.Build();
             return host.RunAsync();
         }
@@ -18,11 +19,13 @@ namespace Siram.Server
         private static (IHostBuilder, Initialization) CreateHostBuilder(string[] args)
         {
             Initialization initializer = new Initialization();
-            IHostBuilder builder = Host.CreateDefaultBuilder(args)
-                .ConfigureServices((_, services) =>
-                {
-                    initializer.Configure(services);
-                });
+            IHostBuilder builder = Host.CreateDefaultBuilder(args);
+            builder.ConfigureServices((env, services) =>
+            {
+                initializer.Configure(services);
+                Logger logger = initializer.Logging(env.HostingEnvironment.ContentRootPath);
+                services.AddSingleton<ILoggerFactory>(sp => new SerilogLoggerFactory(logger, true));
+            });
             return (builder, initializer);
         }
     }
